@@ -59,6 +59,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Images\cursor.cur" />
     <EmbeddedResource Include="RectangleAnalyzer.resx">
       <DependentUpon>RectangleAnalyzer.cs</DependentUpon>
     </EmbeddedResource>
@@ -86,8 +87,8 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\RectangleCursor.bmp" />
     <Content Include="Images\FullSizeRender.ico" />
-    <None Include="Images\graph.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
