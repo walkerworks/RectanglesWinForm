@@ -12,7 +12,7 @@ namespace ApprendaRectangles.ColorPallet
     public class AppColor
     {
         public static AppColor Action = new AppColor { Color = Color.FromArgb(252, 163, 17), ColorName = "Orange" };
-        public static AppColor Background = new AppColor { Color = Color.FromArgb(229, 229, 229), ColorName = "Gray" };
+        public static AppColor Background = new AppColor { Color = Color.FromArgb(204, 214, 235), ColorName = "ColumbiaBlue" };
         public static AppColor Text = new AppColor { Color = Color.FromArgb(20, 33, 61), ColorName = "Blue" };
         public static AppColor RectangleOne = new AppColor { Color = Color.FromArgb(104, 142, 38), ColorName = "Olive" };
         public static AppColor RectangleTwo = new AppColor { Color = Color.FromArgb(161, 7, 2), ColorName = "Scarlet" };
