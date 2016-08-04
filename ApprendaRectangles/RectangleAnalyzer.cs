@@ -313,10 +313,10 @@ namespace ApprendaRectangles
                     right.Add(new Point(rectangle.Left+rectangle.Width, i));
                 var top = new List<Point>();
                 for (int i = rectangle.Left; i <= rectangle.Left + rectangle.Width; i++)
-                    right.Add(new Point(i, rectangle.Top));
+                    top.Add(new Point(i, rectangle.Top));
                 var bottom = new List<Point>();
                 for (int i = rectangle.Left; i <= rectangle.Left + rectangle.Width; i++)
-                    right.Add(new Point(i, rectangle.Top+rectangle.Height));
+                    bottom.Add(new Point(i, rectangle.Top+rectangle.Height));
                 return new RectangleView(rectangle, left, right, top, bottom);
             }
 
