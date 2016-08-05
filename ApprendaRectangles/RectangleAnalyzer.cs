@@ -361,19 +361,30 @@ namespace ApprendaRectangles
             {
                 RectangleStatus status = RectangleStatus.NoRelationship;
                 string message = string.Empty;
-                var intersectingPoints = AllPoints.Where(p => otherRectangle.AllPoints.Contains(p));
-                var containedPoints = AllPoints.Where(p => otherRectangle.IsPointWithin(p));
+                var intersectingPoints = AllPoints.Where(p => otherRectangle.AllPoints.Contains(p)).Distinct();
+                var containedPoints = AllPoints.Where(p => otherRectangle.IsPointWithin(p)).Distinct();
+                var inverseContainedPoints = otherRectangle.AllPoints.Where(p => IsPointWithin(p)).Distinct();
+
                 if (intersectingPoints.Any())
                 {
-
-                    if (containedPoints.Any())
+                    if ((intersectingPoints.Count() + containedPoints.Count()) == AllPoints.Distinct().Count())
+                    {
+                        status = RectangleStatus.Contained;
+                        message = $"{Name} is Contained within {otherRectangle.Name}";
+                    }
+                    else if ((intersectingPoints.Count() + inverseContainedPoints.Count()) == otherRectangle.AllPoints.Distinct().Count())
+                    {
+                        status = RectangleStatus.Contained;
+                        message = $"{Name} is Contained within {otherRectangle.Name}";
+                    }
+                    else if (containedPoints.Any())
                         status = RectangleStatus.Intersecting;
                     else
                         status = RectangleStatus.Adjacent;
                     return new Tuple<RectangleStatus, string, List<Point>>(status, message, intersectingPoints.ToList());
                 }
 
-                var inverseContainedPoints = otherRectangle.AllPoints.Where(p => IsPointWithin(p));
+                
                 if (containedPoints.Any())
                 {
                     status = RectangleStatus.Contained;
