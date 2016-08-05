@@ -269,11 +269,13 @@ namespace ApprendaRectangles
         /// </summary>
         private class RectangleView
         {
+
             private TransparencyEnabledPicBox _basePicBox;
             private List<Point> _left;
             private List<Point> _right;
             private List<Point> _top;
             private List<Point> _bottom;
+            public TransparencyEnabledPicBox BasePicBox { get { return _basePicBox; } }
             public string Name { get { return _basePicBox.Name; } }
             public List<Point> Left { get { return _left; } }
             public List<Point> Right { get { return _right; } }
@@ -361,41 +363,45 @@ namespace ApprendaRectangles
             {
                 RectangleStatus status = RectangleStatus.NoRelationship;
                 string message = string.Empty;
-                var intersectingPoints = AllPoints.Where(p => otherRectangle.AllPoints.Contains(p)).Distinct();
-                var containedPoints = AllPoints.Where(p => otherRectangle.IsPointWithin(p)).Distinct();
-                var inverseContainedPoints = otherRectangle.AllPoints.Where(p => IsPointWithin(p)).Distinct();
 
-                if (intersectingPoints.Any())
-                {
-                    if ((intersectingPoints.Count() + containedPoints.Count()) == AllPoints.Distinct().Count())
-                    {
-                        status = RectangleStatus.Contained;
-                        message = $"{Name} is Contained within {otherRectangle.Name}";
-                    }
-                    else if ((intersectingPoints.Count() + inverseContainedPoints.Count()) == otherRectangle.AllPoints.Distinct().Count())
-                    {
-                        status = RectangleStatus.Contained;
-                        message = $"{Name} is Contained within {otherRectangle.Name}";
-                    }
-                    else if (containedPoints.Any())
-                        status = RectangleStatus.Intersecting;
-                    else
-                        status = RectangleStatus.Adjacent;
-                    return new Tuple<RectangleStatus, string, List<Point>>(status, message, intersectingPoints.ToList());
-                }
+                //Containment is the least expensive to check - so do those first 
+                var ThisRectangleContainedInOtherRectangle =
+                  BasePicBox.Left <= otherRectangle.BasePicBox.Left &&
+                  BasePicBox.Left + BasePicBox.Width >= otherRectangle.BasePicBox.Left + otherRectangle.BasePicBox.Width &&
+                  BasePicBox.Top <= otherRectangle.BasePicBox.Top &&
+                  BasePicBox.Top + BasePicBox.Height >= otherRectangle.BasePicBox.Top + otherRectangle.BasePicBox.Height;
 
-                
-                if (containedPoints.Any())
+                var OtherRectangleContainedInThisRectangle =
+                  otherRectangle.BasePicBox.Left <= this.BasePicBox.Left &&
+                  otherRectangle.BasePicBox.Left + otherRectangle.BasePicBox.Width >= this.BasePicBox.Left + this.BasePicBox.Width &&
+                  otherRectangle.BasePicBox.Top <= this.BasePicBox.Top &&
+                  otherRectangle.BasePicBox.Top + otherRectangle.BasePicBox.Height >= this.BasePicBox.Top + this.BasePicBox.Height;
+
+                if (ThisRectangleContainedInOtherRectangle)
                 {
                     status = RectangleStatus.Contained;
                     message = $"{Name} is Contained within {otherRectangle.Name}";
+                    return new Tuple<RectangleStatus, string, List<Point>>(status, message, null);
 
                 }
-                if (inverseContainedPoints.Any())
+                if (OtherRectangleContainedInThisRectangle)
                 {
                     status = RectangleStatus.Contained;
                     message = $"{otherRectangle.Name} is Contained within {Name}";
+                    return new Tuple<RectangleStatus, string, List<Point>>(status, message, null);
                 }
+
+                //If not contained, the next cheapest thing to check is there's any intersection
+                var intersectingPoints = AllPoints.Where(p => otherRectangle.AllPoints.Contains(p)).Distinct();
+                if(!intersectingPoints.Any())
+                    return new Tuple<RectangleStatus, string, List<Point>>(status, message, intersectingPoints.ToList());
+
+                //If there is some intersection, we need to know if any are *within* the other rectangle
+                var containedPoints = AllPoints.Where(p => otherRectangle.IsPointWithin(p)).Distinct();
+                if (containedPoints.Any())
+                    status = RectangleStatus.Intersecting;
+                else
+                    status = RectangleStatus.Adjacent;
                 return new Tuple<RectangleStatus, string, List<Point>>(status, message, intersectingPoints.ToList());
             }
 
@@ -410,7 +416,7 @@ namespace ApprendaRectangles
                 //A shared point is not considered *within* for the purposes of this application
                 if (AllPoints.Contains(point))
                     return false;
-                Rectangle current = new Rectangle(_basePicBox.Location, _basePicBox.Size);
+                Rectangle current = new Rectangle(BasePicBox.Location, BasePicBox.Size);
                 return current.Contains(point);
             }
         }
